@@ -65,13 +65,13 @@ jobs:
 
       - name: Deploy built files to docs/
         run: |
-          # Remove old built files first
-          rm -rf docs/ assets/ data/ index.html
-          
+          # Remove only old built docs/ (NOT root data/ assets/ index.html)
+          rm -rf docs/
+
           # Copy fresh build to docs/
           mkdir -p docs
           cp -r web/dist/* docs/
-          
+
           # Commit and push
           git config user.name "github-actions-bot"
           git config user.email "41898282+github-actions-bot@users.noreply.github.com"

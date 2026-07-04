@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: process.env.GITHUB_PAGES ? '/ai-news/docs/' : '/',
+  base: process.env.GITHUB_PAGES ? '/ai-news/' : '/',
   server: {
     port: 5173,
     open: true,
