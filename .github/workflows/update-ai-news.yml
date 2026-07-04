@@ -7,8 +7,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: "pages"
@@ -49,18 +47,6 @@ jobs:
       - name: Update data
         run: pnpm run fetch
 
-      - name: Commit and push changes
-        run: |
-          if git diff --quiet; then
-            echo "No changes to commit"
-          else
-            git config user.name "github-actions-bot"
-            git config user.email "41898282+github-actions-bot@users.noreply.github.com"
-            git add data/latest-24h.json data/latest-7d.json data/archive.json data/source-status.json data/waytoagi-7d.json data/title-zh-cache.json
-            git commit -m "chore: update ai news snapshot"
-            git push
-          fi
-
       - name: Generate OPML JSON
         run: npx tsx src/generate-opml-json.ts
 
@@ -77,21 +63,14 @@ jobs:
           cp ../data/source-status.json dist/data/
           cp ../data/opml-feeds.json dist/data/ 2>/dev/null || true
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./web/dist
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: update
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy built files to main branch root
+        run: |
+          # Copy built files to repo root
+          cp -r web/dist/* .
+          
+          # Commit and push
+          git config user.name "github-actions-bot"
+          git config user.email "41898282+github-actions-bot@users.noreply.github.com"
+          git add -f index.html assets/ data/
+          git commit -m "deploy: update site" --allow-empty
+          git push
