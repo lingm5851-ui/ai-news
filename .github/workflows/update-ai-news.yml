@@ -63,14 +63,18 @@ jobs:
           cp ../data/source-status.json dist/data/
           cp ../data/opml-feeds.json dist/data/ 2>/dev/null || true
 
-      - name: Deploy built files to main branch root
+      - name: Deploy built files to docs/
         run: |
-          # Copy built files to repo root
-          cp -r web/dist/* .
+          # Remove old built files first
+          rm -rf docs/ assets/ data/ index.html
+          
+          # Copy fresh build to docs/
+          mkdir -p docs
+          cp -r web/dist/* docs/
           
           # Commit and push
           git config user.name "github-actions-bot"
           git config user.email "41898282+github-actions-bot@users.noreply.github.com"
-          git add -f index.html assets/ data/
+          git add -f docs/
           git commit -m "deploy: update site" --allow-empty
           git push
